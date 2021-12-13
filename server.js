@@ -5,6 +5,8 @@ const express = require('express');
 const app=express();
 const expressLayouts=require('express-ejs-layouts');
 const indexRouter= require('./routes/index')
+const authorRouter= require('./routes/authors')
+const bodyParser = require('body-parser')
 //set our view engine
 app.set('view engine','ejs')
 //set where our views are going to come
@@ -14,6 +16,8 @@ app.set('layout','layouts/layout')
 
 app.use(expressLayouts)
 app.use('/',indexRouter)
+app.use('/authors',authorRouter)
+app.use(bodyParser.urlencoded({limit:'10mb',extended:false}))
 //where our public files are going to be
 app.use(express.static('public'))
 //mongo server setup
