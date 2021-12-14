@@ -23,12 +23,19 @@ const urlencodedParser = bodyParser.urlencoded({
 
 //all books routes
 router.get('/',async(req,res)=>{
-  let searchOptions={}
+  
+  let query = Book.find()
   if(req.query.title !=null && req.query.title!==""){
-      searchOptions.title=new RegExp(req.query.title,'i')
+      query=query.regex('title',new RegExp(req.query.title,'i'))
   }
+  if(req.query.publishedAfter !=null && req.query.publishedAfter!==""){
+    query=query.gte('publishDate',req.query.publishedAfter)
+}
+if(req.query.publishedBefore !=null && req.query.publishedBefore!==""){
+  query=query.lte('publishDate',req.query.publishedBefore)
+}
   try{
-  const books =await Book.find(searchOptions)
+  const books =await query.exec()
   res.render('books/index',
   {books:books,
   searchOptions:req.query 
