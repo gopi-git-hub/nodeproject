@@ -37,13 +37,61 @@ router.post('/',urlencodedParser,async(req,res)=>{
   })
   try{
     const newAuthor=await author.save();
-    res.redirect('/authors')
+    res.redirect(`/authors/${author.id}`)
+    // res.redirect('/authors')
   }catch(error){
     res.render('authors/new',{
         author:author,
         errorMessage:"Error Creating Author"
     })
   }
+})
+
+router.get('/:id',(req,res)=>{
+  res.send('show Author'+req.params.id)
+})
+
+router.get('/:id/edit',async(req,res)=>{
+  // res.send('edit author'+req.params.id)
+
+  try{
+    const author=await Author.findById(req.params.id)
+    res.render("authors/edit",{author:author})
+  }catch{
+    res.redirect('/authors')
+  }
+  
+})
+
+router.put('/:id',urlencodedParser,async(req,res)=>{
+  // res.send('update author'+req.params.id)
+  let author
+
+try{
+  
+  author = await Author.findById(req.params.id)
+  console.log("author>>"+author)
+  author.name = req.body.name
+  console.log("author>>"+author)
+  await author.save();
+  res.redirect(`/authors/${author.id}`)
+  
+}catch{
+  // console.log("author>>"+author)
+  if(author == null){
+    res.redirect('/')
+  }else{
+    res.render('authors/edit',{
+      author:author,
+      errorMessage:"Error updating Author"
+  })
+  }
+ 
+}
+})
+
+router.delete('/:id',(req,res)=>{
+  res.send('delete author'+req.params.id)
 })
 
 module.exports=router

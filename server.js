@@ -8,12 +8,14 @@ const indexRouter= require('./routes/index')
 const authorRouter= require('./routes/authors')
 const bookRouter= require('./routes/books')
 const bodyParser = require('body-parser')
+const methodOverride=require('method-override')
 //set our view engine
 app.set('view engine','ejs')
 //set where our views are going to come
 app.set('views',__dirname+'/views')
 //set where our layout need to be creted
 app.set('layout','layouts/layout')
+app.use(methodOverride('_method'))
 
 app.use(expressLayouts)
 app.use('/',indexRouter)
