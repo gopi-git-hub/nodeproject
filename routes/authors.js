@@ -1,6 +1,7 @@
 const express=require('express')
 const router = express.Router()
 const Author = require('../models/author')
+const Book = require('../models/book')
 const bodyParser = require("body-parser");
 
 const urlencodedParser = bodyParser.urlencoded({
@@ -47,8 +48,21 @@ router.post('/',urlencodedParser,async(req,res)=>{
   }
 })
 
-router.get('/:id',(req,res)=>{
-  res.send('show Author'+req.params.id)
+router.get('/:id',urlencodedParser,async(req,res)=>{
+
+  try{
+    const author=await Author.findById(req.params.id)
+    const books = await Book.find({author:author.id}).limit(6).exec()
+    res.render('authors/show',{
+      author:author,
+      booksByAuthor:books
+    })
+  }catch(err){
+    console.log("err>>"+err)
+    res.redirect('/')
+  }
+  // res.send('show Author'+req.params.id)
+
 })
 
 router.get('/:id/edit',async(req,res)=>{
@@ -90,8 +104,20 @@ try{
 }
 })
 
-router.delete('/:id',(req,res)=>{
-  res.send('delete author'+req.params.id)
+router.delete('/:id',urlencodedParser,async(req,res)=>{
+  // res.send('delete author'+req.params.id)
+  let author
+  try{
+    author = await Author.findById(req.params.id)
+    await author.remove()
+    res.redirect("/authors")
+  }catch{
+    if(author == null){
+      res.redirect("/")
+    }else{
+      res.redirect(`/authors/${author.id}`)
+    }
+  }
 })
 
 module.exports=router
